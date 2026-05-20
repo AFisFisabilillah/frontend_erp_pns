@@ -9,7 +9,7 @@ dist
 # Node dependencies
 node_modules
 .ai
-
+.agents
 # Logs
 logs
 *.log
@@ -18,8 +18,9 @@ logs
 .DS_Store
 .fleet
 .idea
-
+skills-lock.json
 # Local env files
 .env
 .env.*
 !.env.example
+./AGENTS.md
