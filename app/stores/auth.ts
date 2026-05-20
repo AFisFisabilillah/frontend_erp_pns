@@ -1,4 +1,5 @@
 import type { IUser } from '~/types/auth'
+import {defineStore} from "pinia";
 
 const AUTH_TOKEN_KEY = 'auth_token'
 const AUTH_USER_KEY = 'auth_user'
