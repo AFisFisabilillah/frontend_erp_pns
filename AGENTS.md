@@ -434,30 +434,3 @@ Request :
 GET /api/pegawai/export/pdf
 Header: Accept :application/pdf
 
-
-
-# Kepangkatan
-GET    /api/kepangkatan
-GET    /api/pns/{id}/riwayat-pangkat
-POST   /api/pns/{id}/kenaikan-pangkat
-
-# Jabatan
-GET    /api/jabatan
-GET    /api/pns/{id}/riwayat-jabatan
-POST   /api/pns/{id}/mutasi-jabatan
-
-# Satuan Kerja
-GET    /api/satker
-POST   /api/satker
-PUT    /api/satker/{id}
-
-# Laporan
-GET    /api/laporan/rekapitulasi
-GET    /api/laporan/statistik
-GET    /api/laporan/export?format=excel
-```
-
----
-
-*Dokumen ini wajib diperbarui setiap kali ada perubahan arsitektur signifikan.*
-*Versi: 1.0 — Dibuat untuk proyek SIMPEG Frontend berbasis Nuxt.js 3*
