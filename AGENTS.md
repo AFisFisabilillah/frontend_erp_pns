@@ -14,7 +14,6 @@
 | **Autentikasi** | Laravel Sanctum / JWT via API |
 | **Desain** | Dashboard Modern — Warna utama: **Biru (#1E40AF)** & **Hitam (#0A0A0F)** |
 | **Target** | Admin Pemerintahan / Operator Kepegawaian |
-
 ---
 
 ## 2. Stack & Dependensi Wajib

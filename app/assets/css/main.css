@@ -1,2 +1,41 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@theme {
+  /* Primary - Elegant Navy Slate */
+  --color-primary-50:  #F1F5F9;
+  --color-primary-100: #E2E8F0;
+  --color-primary-200: #CBD5E1;
+  --color-primary-300: #94A3B8;
+  --color-primary-400: #64748B;
+  --color-primary-500: #334155;
+  --color-primary-600: #1E3A5F;
+  --color-primary-700: #172A45;
+  --color-primary-800: #0F1F33;
+  --color-primary-900: #0A1624;
+  --color-primary-950: #050B12;
+
+  /* Dark - App Background */
+  --color-dark-50:  #F0F0F5;
+  --color-dark-200: #C4C4CF;
+  --color-dark-400: #6B6B80;
+  --color-dark-600: #2C2C3A;
+  --color-dark-700: #22222E;
+  --color-dark-800: #1A1A24;
+  --color-dark-900: #111118;
+  --color-dark-950: #0A0A0F;
+}
+.dark {
+  --ui-bg: var(--color-dark-950);
+  --ui-bg-muted: var(--color-dark-900);
+  --ui-bg-elevated: var(--color-dark-800);
+  --ui-bg-accented: var(--color-dark-700);
+
+  --ui-border: var(--color-dark-600);
+  --ui-border-muted: var(--color-dark-800);
+
+  --ui-text: var(--color-dark-50);
+  --ui-text-muted: var(--color-dark-400);
+  --ui-text-toned: var(--color-dark-200);
+
+  --ui-primary: var(--color-primary-300);
+}
