@@ -5,21 +5,20 @@ import type { NavigationMenuItem, SidebarProps } from '@nuxt/ui'
 defineProps<Pick<SidebarProps, 'variant' | 'collapsible' | 'side'>>()
 
 const open = ref(true)
+const route = useRoute()
 
 const items: NavigationMenuItem[] = [
   {
     label: 'Home',
     icon: 'i-lucide-house',
-    active: true
+    to: '/',
+    active: route.path === '/'
   },
   {
-    label: 'Inbox',
-    icon: 'i-lucide-inbox',
-    badge: '4'
-  },
-  {
-    label: 'Contacts',
-    icon: 'i-lucide-users'
+    label: 'Pegawai',
+    icon: 'i-lucide-users',
+    to: '/pegawai',
+    active: route.path.startsWith('/pegawai')
   }
 ]
 </script>
@@ -71,10 +70,9 @@ const items: NavigationMenuItem[] = [
         />
       </div>
 
-      <div class="flex-1 p-4">
-        <Placeholder class="size-full" />
+      <div class="flex-1 overflow-y-auto p-4">
+        <slot />
       </div>
     </div>
   </div>
 </template>
-
