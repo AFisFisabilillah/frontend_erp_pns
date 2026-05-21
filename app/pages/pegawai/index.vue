@@ -174,6 +174,34 @@ async function bukaEditPegawai(nip: string) {
   await navigateTo(`/pegawai/${nip}/edit`)
 }
 
+async function exportPdfPegawai() {
+  try {
+    const blob = await pegawaiStore.exportPegawaiPdf()
+    const pdfBlob = blob.type === 'application/pdf'
+      ? blob
+      : new Blob([blob], { type: 'application/pdf' })
+    const url = URL.createObjectURL(pdfBlob)
+    const link = document.createElement('a')
+
+    link.href = url
+    link.download = `data-pegawai-${new Date().toISOString().slice(0, 10)}.pdf`
+    link.click()
+    URL.revokeObjectURL(url)
+
+    toast.add({
+      title: 'Export PDF berhasil',
+      description: 'File data pegawai berhasil diunduh.',
+      color: 'success'
+    })
+  } catch (error: unknown) {
+    toast.add({
+      title: 'Gagal export PDF',
+      description: error instanceof Error ? error.message : 'Terjadi kesalahan saat mengunduh PDF pegawai.',
+      color: 'error'
+    })
+  }
+}
+
 function mintaHapusPegawai(ids: string[]) {
   if (ids.length === 0) {
     return
@@ -227,13 +255,37 @@ onMounted(async () => {
         </p>
       </div>
 
-      <UButton
-        to="/pegawai/tambah"
-        icon="i-lucide-user-plus"
-        aria-label="Buka halaman tambah pegawai"
-      >
-        Tambah Pegawai
-      </UButton>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <UButton
+          to="/pegawai/trash"
+          color="warning"
+          variant="soft"
+          icon="i-lucide-trash"
+          aria-label="Buka halaman trash pegawai"
+        >
+          Trash
+        </UButton>
+
+        <UButton
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-file-down"
+          :loading="pegawaiStore.exporting"
+          :disabled="pegawaiStore.exporting"
+          aria-label="Export data pegawai ke PDF"
+          @click="exportPdfPegawai"
+        >
+          Export PDF
+        </UButton>
+
+        <UButton
+          to="/pegawai/tambah"
+          icon="i-lucide-user-plus"
+          aria-label="Buka halaman tambah pegawai"
+        >
+          Tambah Pegawai
+        </UButton>
+      </div>
     </section>
 
     <PegawaiFilterPanel
