@@ -4,10 +4,12 @@ import type {
   IApiErrorResponse,
   IBulkPegawaiPayload,
   IPegawai,
+  IPegawaiDetailResponse,
   IPegawaiFormPayload,
   IPegawaiListResponse,
   IPegawaiQueryParams,
-  ITrashPegawaiResponse
+  ITrashPegawaiResponse,
+  IUnitKerjaOption
 } from '~/types/pegawai'
 
 function getPegawaiErrorMessage(error: unknown, fallback: string): string {
@@ -57,14 +59,32 @@ function buildPegawaiFormData(payload: IPegawaiFormPayload): FormData {
   return formData
 }
 
+function resolvePegawaiDetailResponse(response: IPegawai | IPegawaiDetailResponse): IPegawai {
+  if ('nip' in response) {
+    return response
+  }
+
+  if (response.data) {
+    return response.data
+  }
+
+  if (response.pegawai) {
+    return response.pegawai
+  }
+
+  throw new Error('Format detail pegawai tidak dikenali.')
+}
+
 export const usePegawaiStore = defineStore('pegawai', () => {
   const authStore = useAuthStore()
   const config = useRuntimeConfig()
 
   const daftarPegawai = ref<IPegawai[]>([])
   const daftarPegawaiTerhapus = ref<IPegawai[]>([])
+  const daftarUnitKerja = ref<IUnitKerjaOption[]>([])
   const detailPegawai = ref<IPegawai | null>(null)
   const loading = ref(false)
+  const unitKerjaLoading = ref(false)
   const submitting = ref(false)
   const exporting = ref(false)
   const errorMessage = ref<string | null>(null)
@@ -118,10 +138,51 @@ export const usePegawaiStore = defineStore('pegawai', () => {
     }
   }
 
+  async function fetchUnitKerja() {
+    unitKerjaLoading.value = true
+
+    try {
+      const response = await $fetch<IUnitKerjaOption[]>(`${config.public.apiBaseUrl}/api/unit-kerja`, {
+        headers: getAuthHeaders()
+      })
+
+      daftarUnitKerja.value = response
+
+      return response
+    } catch (error: unknown) {
+      const message = getPegawaiErrorMessage(error, 'Gagal memuat pilihan unit kerja.')
+      throw new Error(message)
+    } finally {
+      unitKerjaLoading.value = false
+    }
+  }
+
   function setDetailPegawai(nip: string) {
     detailPegawai.value = daftarPegawai.value.find((item) => item.nip === nip) || null
 
     return detailPegawai.value
+  }
+
+  async function fetchPegawaiDetail(nip: string) {
+    loading.value = true
+    errorMessage.value = null
+
+    try {
+      const response = await $fetch<IPegawai | IPegawaiDetailResponse>(`${config.public.apiBaseUrl}/api/pegawai/${nip}`, {
+        headers: getAuthHeaders()
+      })
+      const pegawai = resolvePegawaiDetailResponse(response)
+
+      detailPegawai.value = pegawai
+
+      return pegawai
+    } catch (error: unknown) {
+      const message = getPegawaiErrorMessage(error, 'Gagal memuat detail pegawai.')
+      errorMessage.value = message
+      throw new Error(message)
+    } finally {
+      loading.value = false
+    }
   }
 
   async function createPegawai(payload: IPegawaiFormPayload) {
@@ -293,6 +354,7 @@ export const usePegawaiStore = defineStore('pegawai', () => {
   function resetState() {
     daftarPegawai.value = []
     daftarPegawaiTerhapus.value = []
+    daftarUnitKerja.value = []
     detailPegawai.value = null
     pagination.value = null
     paginationLinks.value = null
@@ -306,8 +368,10 @@ export const usePegawaiStore = defineStore('pegawai', () => {
   return {
     daftarPegawai,
     daftarPegawaiTerhapus,
+    daftarUnitKerja,
     detailPegawai,
     loading,
+    unitKerjaLoading,
     submitting,
     exporting,
     errorMessage,
@@ -316,7 +380,9 @@ export const usePegawaiStore = defineStore('pegawai', () => {
     filterAktif,
     isEmpty,
     fetchPegawai,
+    fetchUnitKerja,
     setDetailPegawai,
+    fetchPegawaiDetail,
     createPegawai,
     updatePegawai,
     deletePegawai,

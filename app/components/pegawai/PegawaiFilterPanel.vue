@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { IUnitKerjaOption } from '~/types/pegawai'
+
 interface IPerPageOption {
   label: string
   value: number
@@ -7,6 +9,8 @@ interface IPerPageOption {
 defineProps<{
   search: string
   unitKerja: string
+  unitKerjaOptions: IUnitKerjaOption[]
+  unitKerjaLoading: boolean
   size: number
   perPageOptions: IPerPageOption[]
 }>()
@@ -38,15 +42,18 @@ const emit = defineEmits<{
         </UFormField>
 
         <UFormField label="Filter unit kerja" name="unit_kerja">
-          <UInput
+          <USelect
             :model-value="unitKerja"
+            :items="unitKerjaOptions"
+            :loading="unitKerjaLoading"
+            value-key="value"
+            label-key="label"
             icon="i-lucide-building-2"
-            placeholder="Contoh: Bagian Administrasi Umum"
+            placeholder="Pilih unit kerja"
             aria-label="Filter data berdasarkan unit kerja"
             class="w-full"
             size="xl"
             @update:model-value="emit('update:unitKerja', String($event))"
-            @keydown.enter.prevent="emit('apply')"
           />
         </UFormField>
 

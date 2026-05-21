@@ -39,6 +39,11 @@ export interface IPegawaiQueryParams {
   page?: number
 }
 
+export interface IUnitKerjaOption {
+  label: string
+  value: string
+}
+
 export interface IApiPaginationLink {
   url: string | null
   label: string
@@ -68,6 +73,11 @@ export interface IPegawaiListResponse {
   data: IPegawai[]
   links: IApiPaginationLinks
   meta: IApiPaginationMeta
+}
+
+export interface IPegawaiDetailResponse {
+  data?: IPegawai
+  pegawai?: IPegawai
 }
 
 export interface ITrashPegawaiResponse {

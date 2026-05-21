@@ -30,6 +30,15 @@ const daftarPerHalaman = [
   { label: '50 / halaman', value: 50 }
 ]
 
+const SEMUA_UNIT_KERJA_VALUE = '__semua_unit_kerja__'
+
+const daftarUnitKerjaFilter = computed(() => [
+  { label: 'Semua unit kerja', value: SEMUA_UNIT_KERJA_VALUE },
+  ...pegawaiStore.daftarUnitKerja
+])
+
+const unitKerjaFilterValue = computed(() => filterForm.unit_kerja || SEMUA_UNIT_KERJA_VALUE)
+
 const totalPegawaiTerpilih = computed(() => selectedPegawaiIds.value.length)
 const semuaBarisTerpilih = computed(() => {
   const daftar = pegawaiStore.daftarPegawai
@@ -103,6 +112,18 @@ async function loadPegawai(params: Partial<typeof filterForm> = {}) {
   }
 }
 
+async function loadUnitKerjaFilter() {
+  try {
+    await pegawaiStore.fetchUnitKerja()
+  } catch (error: unknown) {
+    toast.add({
+      title: 'Gagal memuat unit kerja',
+      description: error instanceof Error ? error.message : 'Terjadi kesalahan saat mengambil pilihan unit kerja.',
+      color: 'error'
+    })
+  }
+}
+
 async function terapkanFilter() {
   filterForm.page = 1
   selectedPegawaiIds.value = []
@@ -135,18 +156,22 @@ async function ubahJumlahPerHalaman(value: number | string) {
   await loadPegawai({ size: filterForm.size, page: 1 })
 }
 
+function ubahUnitKerjaFilter(value: string) {
+  filterForm.unit_kerja = value === SEMUA_UNIT_KERJA_VALUE ? '' : value
+}
+
 const deleteDescription = computed(() => {
   return deleteTargetIds.value.length === 1
     ? 'Data pegawai yang dipilih akan dipindahkan dari daftar aktif.'
     : `${deleteTargetIds.value.length} data pegawai yang dipilih akan dipindahkan dari daftar aktif.`
 })
 
-function tampilkanFiturBelumTersedia(label: string) {
-  toast.add({
-    title: `${label} belum tersedia`,
-    description: 'Permintaan saat ini hanya mencakup daftar pegawai beserta aksi hapus.',
-    color: 'neutral'
-  })
+async function bukaDetailPegawai(nip: string) {
+  await navigateTo(`/pegawai/${nip}`)
+}
+
+async function bukaEditPegawai(nip: string) {
+  await navigateTo(`/pegawai/${nip}/edit`)
 }
 
 function mintaHapusPegawai(ids: string[]) {
@@ -186,6 +211,7 @@ async function hapusPegawai() {
 }
 
 onMounted(async () => {
+  await loadUnitKerjaFilter()
   await loadPegawai()
 })
 </script>
@@ -212,11 +238,13 @@ onMounted(async () => {
 
     <PegawaiFilterPanel
       :search="filterForm.search"
-      :unit-kerja="filterForm.unit_kerja"
+      :unit-kerja="unitKerjaFilterValue"
+      :unit-kerja-options="daftarUnitKerjaFilter"
+      :unit-kerja-loading="pegawaiStore.unitKerjaLoading"
       :size="filterForm.size"
       :per-page-options="daftarPerHalaman"
       @update:search="filterForm.search = $event"
-      @update:unit-kerja="filterForm.unit_kerja = $event"
+      @update:unit-kerja="ubahUnitKerjaFilter"
       @update:size="ubahJumlahPerHalaman"
       @apply="terapkanFilter"
       @reset="resetFilter"
@@ -238,8 +266,8 @@ onMounted(async () => {
       @toggle-row="toggleSelectedPegawai"
       @delete-selected="mintaHapusPegawai(selectedPegawaiIds)"
       @delete-one="mintaHapusPegawai([$event])"
-      @detail="tampilkanFiturBelumTersedia('Detail pegawai')"
-      @edit="tampilkanFiturBelumTersedia('Edit pegawai')"
+      @detail="bukaDetailPegawai($event.nip)"
+      @edit="bukaEditPegawai($event.nip)"
       @prev="ubahHalaman(halamanSaatIni - 1)"
       @next="ubahHalaman(halamanSaatIni + 1)"
     />
