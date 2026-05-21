@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IPegawai, IPegawaiQueryParams } from '~/types/pegawai'
+import type { IPegawaiQueryParams } from '~/types/pegawai'
 import PegawaiFilterPanel from "~/components/pegawai/PegawaiFilterPanel.vue";
 import PegawaiTablePanel from "~/components/pegawai/PegawaiTablePanel.vue";
 
@@ -192,6 +192,24 @@ onMounted(async () => {
 
 <template>
   <div class="space-y-6">
+    <section class="flex flex-col gap-4 rounded-2xl border border-[var(--color-dark-600)] bg-[rgba(17,17,24,0.84)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="text-sm text-[var(--color-dark-200)]">Operasional Pegawai</p>
+        <h1 class="mt-2 text-2xl font-semibold text-[var(--color-dark-50)]">Daftar Pegawai</h1>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-[var(--color-dark-200)]">
+          Kelola daftar pegawai aktif, cari berdasarkan unit kerja, dan lakukan aksi administrasi dari satu tampilan kerja.
+        </p>
+      </div>
+
+      <UButton
+        to="/pegawai/tambah"
+        icon="i-lucide-user-plus"
+        aria-label="Buka halaman tambah pegawai"
+      >
+        Tambah Pegawai
+      </UButton>
+    </section>
+
     <PegawaiFilterPanel
       :search="filterForm.search"
       :unit-kerja="filterForm.unit_kerja"
