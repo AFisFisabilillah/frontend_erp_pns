@@ -5,9 +5,12 @@ import type { NavigationMenuItem, SidebarProps } from '@nuxt/ui'
 defineProps<Pick<SidebarProps, 'variant' | 'collapsible' | 'side'>>()
 
 const open = ref(true)
+const isLoggingOut = ref(false)
 const route = useRoute()
+const toast = useToast()
+const { logout: logoutAuth } = useAuth()
 
-const items: NavigationMenuItem[] = [
+const items = computed<NavigationMenuItem[]>(() => [
   {
     label: 'Home',
     icon: 'i-lucide-house',
@@ -18,9 +21,45 @@ const items: NavigationMenuItem[] = [
     label: 'Pegawai',
     icon: 'i-lucide-users',
     to: '/pegawai',
-    active: route.path.startsWith('/pegawai')
+    active: route.path.startsWith('/pegawai'),
+    children: [
+      {
+        label: 'Daftar Pegawai',
+        icon: 'i-lucide-list',
+        to: '/pegawai',
+        active: route.path === '/pegawai'
+      },
+      {
+        label: 'Tambah Pegawai',
+        icon: 'i-lucide-user-plus',
+        to: '/pegawai/tambah',
+        active: route.path === '/pegawai/tambah'
+      },
+      {
+        label: 'Trash Pegawai',
+        icon: 'i-lucide-trash-2',
+        to: '/pegawai/trash',
+        active: route.path === '/pegawai/trash'
+      }
+    ]
   }
-]
+])
+
+async function handleLogout() {
+  isLoggingOut.value = true
+
+  try {
+    await logoutAuth()
+  } catch {
+    toast.add({
+      title: 'Logout gagal',
+      description: 'Sesi lokal tetap dibersihkan. Silakan coba masuk kembali.',
+      color: 'error'
+    })
+  } finally {
+    isLoggingOut.value = false
+  }
+}
 </script>
 
 <template>
@@ -41,7 +80,7 @@ const items: NavigationMenuItem[] = [
       }"
     >
       <template #header>
-        <UIcon name="i-logos-nuxt-icon" class="size-8" />
+        <p class="text-sm font-medium text-[var(--color-dark-200)]">Dashboard Kepegawaian</p>
       </template>
 
       <UNavigationMenu
@@ -49,6 +88,19 @@ const items: NavigationMenuItem[] = [
           orientation="vertical"
           :ui="{ link: 'p-1.5 overflow-hidden' }"
       />
+
+      <template #footer>
+        <UButton
+            icon="i-lucide-log-out"
+            label="Logout"
+            color="error"
+            variant="ghost"
+            block
+            :loading="isLoggingOut"
+            aria-label="Logout"
+            @click="handleLogout"
+        />
+      </template>
     </USidebar>
 
     <div
